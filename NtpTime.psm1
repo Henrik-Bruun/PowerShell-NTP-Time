@@ -1,7 +1,8 @@
-﻿<#
+﻿
+<#
 Chris Warwick, @cjwarwickps, August 2012.  Updates September 2015.
 chrisjwarwick.wordpress.com
-
+Henrik-Bruun, December 2023 Update with IPv6 support
 Get Datetime from NTP server.
 
 This sends an NTP time packet to the specified NTP server and reads back the response.
@@ -121,13 +122,24 @@ Function Get-NtpTime {
 
     # Construct a 48-byte client NTP time packet to send to the specified server
     [Byte[]]$NtpData = ,0 * 48
-
+    
     # (Construct Request Header: [00=No Leap Warning; 011=Version 3; 011=Client Mode]; 00011011 = 0x1B)
     $NtpData[0] = 0x1B    # NTP Request header in first byte  
 
+        #Add by Henrik-Bruun
+        # Check if the server address is IPv4 or IPv6
+        if ($Server -match '^\d+\.\d+\.\d+\.\d+$') {
+        $AddressFamily = [Net.Sockets.AddressFamily]::InterNetwork
+        } elseif ($Server -match '^[0-9a-fA-F:]+$') {
+        $AddressFamily = [Net.Sockets.AddressFamily]::InterNetworkV6
+        } else {
+        Write-Host "Invalid IP address format"
+        return
+        }
+
 
     ## Todo: See email about calling UDP connect with no internet connection...
-    $Socket = New-Object -TypeName Net.Sockets.Socket -ArgumentList ([Net.Sockets.AddressFamily]::InterNetwork,
+    $Socket = New-Object -TypeName Net.Sockets.Socket -ArgumentList ([Net.Sockets.AddressFamily]::$AddressFamily,
                                                                      [Net.Sockets.SocketType]::Dgram,
                                                                      [Net.Sockets.ProtocolType]::Udp)
     $Socket.SendTimeOut = 2000  # ms
