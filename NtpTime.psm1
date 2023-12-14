@@ -2,7 +2,7 @@
 <#
 Chris Warwick, @cjwarwickps, August 2012.  Updates September 2015.
 chrisjwarwick.wordpress.com
-Henrik-Bruun, December 2023 Update with IPv6 support
+Henrik-Bruun, December 2023 Update with IPv6 support. - ReferenceIdentifier still no IPv6 support
 Get Datetime from NTP server.
 
 This sends an NTP time packet to the specified NTP server and reads back the response.
